@@ -35,7 +35,7 @@ pub fn read_loop(
                 break;
             }
 
-            let mut plaintext = decryptor.update(&buffer[..num_read]);
+            let plaintext = decryptor.update(&buffer[..num_read]);
             if !plaintext.is_empty() {
                 let _ = stats_tx.send(plaintext.len()); // Dont care if it cant see stats
                 if write_tx.send(plaintext).is_err() {
@@ -44,7 +44,7 @@ pub fn read_loop(
             }
         }
         match decryptor.finalize() {
-            Ok(mut last_block) => {
+            Ok(last_block) => {
                 if !last_block.is_empty() {
                     let _ = stats_tx.send(last_block.len());
                     let _ = write_tx.send(last_block);
